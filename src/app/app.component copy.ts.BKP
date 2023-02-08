@@ -1,33 +1,29 @@
 import { Component } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { add, differenceInCalendarWeeks, differenceInWeeks, format, getMonth, getWeek, getYear, sub } from 'date-fns';
 import { de } from 'date-fns/locale';
 
-import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
-
-
-interface Project {
-    name: string;
-    startDate: Date;
-    endDate: Date;
-    planned?: boolean;
-    probability?: number;
+class Project {
+    name: string = '';
+    startDate: Date = new Date();
+    endDate: Date = new Date();
 }
 
-interface UserProject {
-    username: string;
-    projects: Array<Project>;
+class UserProject {
+    username: string = '';
+    projects: Array<Project> = [];
 }
 
-interface HeaderMonth {
-    name: string;
-    startCol: number;
-    endCol: number;
-    halfCol: boolean;
+class HeaderMonths {
+    name: string = '';
+    startCol: number = 0;
+    endCol: number = 0;
+    halfCol: boolean = false;
 }
 
-interface HeaderWeek {
-    week: number;
-    year: number;
+class ShownWeek {
+    week: number = -1;
+    year: number = -1;
 }
 
 
@@ -39,15 +35,15 @@ interface HeaderWeek {
 
 
 
-export class AppComponent {
+export class AppComponent2 {
     usersProjects: Array<UserProject> = [];
 
     viewStartDate: Date = new Date('2022-10-01');
     viewEndDate: Date = new Date('2023-12-31');
-    viewHeaderWeeks: Array<HeaderWeek> = [];
-    viewHeaderMonths: Array<HeaderMonth> = [];
+    viewShownWeeks: Array<ShownWeek> = [];
+    viewHeaderMonths: Array<HeaderMonths> = [];
 
-    // viewWidth: number = 1280;
+    viewWidth: number = 1280;
     viewGridColumnWidth: number = 20;
     viewGridRowHeight: number = 22;
     viewGridUserColumnWidth: number = 200;
@@ -64,9 +60,7 @@ export class AppComponent {
                 {
                     name: "Herr der Ringe",
                     startDate: new Date('2023-01-10'),
-                    endDate: new Date('2023-02-25'),
-                    planned: true,
-                    probability: 0.4
+                    endDate: new Date('2023-02-25')
                 }
             ]
         });
@@ -84,7 +78,7 @@ export class AppComponent {
 
 
         this.buildViewHeaderMonths();
-        this.buildViewHeaderWeeks();
+        this.buildViewShownWeeks();
     }
 
 
@@ -105,8 +99,6 @@ export class AppComponent {
     }
 
     private buildViewHeaderMonths(): void {
-        this.viewHeaderMonths = [];
-
         let actDate: Date = this.viewStartDate;
         let columnStart: number = 2;
         let columnEnd: number = 2;
@@ -114,12 +106,9 @@ export class AppComponent {
 
         let weekChange: boolean = false;
 
-        let element: HeaderMonth = {
-            name: format(actDate, "MMMM", { locale: de }),
-            startCol: columnStart,
-            endCol: columnStart,
-            halfCol: false
-        };
+        let element: HeaderMonths = new HeaderMonths();
+        element.name = format(actDate, "MMMM", { locale: de });
+        element.startCol = columnStart;
 
         while (actDate < this.viewEndDate) {
             weekChange = getWeek(actDate, { weekStartsOn: 1, locale: de }) != getWeek(prevDate, { weekStartsOn: 1, locale: de });
@@ -139,19 +128,16 @@ export class AppComponent {
 
                 element.endCol = columnEnd;
 
-                // console.log("Monatswechsel", actDate, element);
+                console.log("Monatswechsel", actDate, element);
                 this.viewHeaderMonths.push(element);
 
 
                 columnStart = columnEnd;
 
 
-                element = {
-                    name: format(actDate, "MMMM", { locale: de }),
-                    startCol: columnStart,
-                    endCol: columnStart,
-                    halfCol: false
-                };
+                element = new HeaderMonths();
+                element.name = format(actDate, "MMMM", { locale: de });
+                element.startCol = columnStart;
             }
             else if (weekChange) {
                 // Wochenwechsel
@@ -167,45 +153,28 @@ export class AppComponent {
     }
 
 
-    isCurrentWeek(headerWeek: HeaderWeek): boolean {
+    isCurrentWeek(shownWeek: ShownWeek): boolean {
         let week: number = getWeek(Date.now(), { weekStartsOn: 1, locale: de });
         let year: number = getYear(Date.now());
 
-        return headerWeek.week === week && headerWeek.year === year;
+        return shownWeek.week === week && shownWeek.year === year;
     }
 
-    private buildViewHeaderWeeks(): void {
-        this.viewHeaderWeeks = [];
+    private buildViewShownWeeks(): void {
+        this.viewShownWeeks = [];
         for (let date: Date = this.viewStartDate; date <= this.viewEndDate; date = add(date, { weeks: 1 })) {
-            this.viewHeaderWeeks.push(
+            this.viewShownWeeks.push(
                 {
                     week: getWeek(date, { weekStartsOn: 1, locale: de }),
                     year: getYear(date)
                 }
             );
         }
+
+        // console.log(this.viewShownWeeks);
     }
 
     getDateNow(): Date {
         return new Date(Date.now());
-    }
-
-
-
-    dropUserProject(event: CdkDragDrop<Array<UserProject>>) {
-        moveItemInArray(this.usersProjects, event.previousIndex, event.currentIndex);
-    }
-
-
-    setViewStartDate(date: string) {
-        this.viewStartDate = new Date(date);
-        this.buildViewHeaderMonths();
-        this.buildViewHeaderWeeks();
-    }
-
-    setViewEndDate(date: string) {
-        this.viewEndDate = new Date(date);
-        this.buildViewHeaderMonths();
-        this.buildViewHeaderWeeks();
     }
 }

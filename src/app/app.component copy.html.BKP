@@ -1,0 +1,109 @@
+<div
+  class="grid"
+  [style.grid-template-columns]="
+    viewGridUserColumnWidth +
+    'px repeat(' +
+    2 * viewShownWeeks.length +
+    ', ' +
+    viewGridColumnWidth / 2 +
+    'px)'
+  "
+  [style.grid-template-rows]="viewGridRowHeight + 'px'"
+>
+  <ng-container *ngFor="let month of viewHeaderMonths; index as i">
+    <div
+      class="header-month"
+      [style.grid-column]="month.startCol + ' / ' + month.endCol"
+      [style.height]="viewGridRowHeight + 'px'"
+    >
+      <div class="text">
+        {{ month.name }}
+      </div>
+      <div *ngIf="i < viewHeaderMonths.length - 1" class="line"></div>
+    </div>
+  </ng-container>
+</div>
+
+<div
+  class="grid"
+  [style.grid-template-columns]="
+    viewGridUserColumnWidth +
+    'px repeat(' +
+    viewShownWeeks.length +
+    ', ' +
+    viewGridColumnWidth +
+    'px)'
+  "
+  [style.grid-template-rows]="viewGridRowHeight + 'px'"
+>
+  <div class="header-cell user-column">Mitarbeiter</div>
+  <ng-container *ngFor="let week of viewShownWeeks; index as i">
+    <div class="header-cell" [style.height]="viewGridRowHeight + 'px'">
+      <div class="text">
+        {{ week.week }}
+      </div>
+      <div class="vertical-line" [class.present]="isCurrentWeek(week)"></div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngFor="let userProject of usersProjects; index as i">
+    <div
+      class="username"
+      [style.grid-row]="i + 2"
+      [style.height]="viewGridRowHeight + 'px'"
+    >
+      <div
+        class="horizontal-background"
+        [style.background]="i % 2 ? 'gainsboro' : 'white'"
+        [style.height]="viewGridRowHeight + 'px'"
+      ></div>
+      <div class="text">
+        {{ userProject.username }}
+      </div>
+    </div>
+    <ng-container
+      *ngFor="let project of userProject.projects; index as iProject"
+    >
+      <ng-container
+        *ngTemplateOutlet="
+          project.endDate < getDateNow() ? projectPast : projectPresent;
+          context: { project: project, i: i }
+        "
+      ></ng-container>
+    </ng-container>
+  </ng-container>
+</div>
+
+<ng-template #projectPast let-project="project" let-i="i">
+  <div
+    class="project-past"
+    [style.grid-row]="i + 2"
+    [style.grid-column]="
+      2 +
+      viewDateRangeGetWeeks(project.startDate) +
+      ' / span ' +
+      viewDateRangeGetWeeks(project.endDate, project.startDate)
+    "
+  >
+    <div class="name">{{ project.name }} (abgeschlossen)</div>
+  </div>
+</ng-template>
+
+<ng-template #projectPresent let-project="project" let-i="i">
+  <div
+    class="project-present"
+    [style.grid-row]="i + 2"
+    [style.grid-column]="
+      2 +
+      viewDateRangeGetWeeks(project.startDate) +
+      ' / span ' +
+      viewDateRangeGetWeeks(project.endDate, project.startDate)
+    "
+  >
+    <div class="name">
+      {{ project.name }}
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #projectPlanned> </ng-template>

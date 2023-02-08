@@ -1,0 +1,155 @@
+:host {
+    display: block;
+    margin: 60px;
+    width: fit-content;
+}
+
+
+.header {
+    margin: 40px;
+}
+
+
+.grid {
+  display: grid;
+  grid-auto-flow: row;
+
+  .header-months {
+    display: grid;
+    grid-auto-flow: column;
+
+    :first-child.header-month {
+      border-left: unset;
+    }
+
+    .header-month {
+      display: grid;
+      grid-auto-flow: column;
+      grid-template-columns: auto 1px;
+      border-left: 1px solid lightgray;
+
+      .text {
+        font-size: x-small;
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 3px;
+      }
+    }
+  }
+
+  .header-weeks {
+    display: grid;
+    grid-auto-flow: column;
+
+    border: 1px solid lightgray;
+
+    .header-user {
+      font-size: medium;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .header-week {
+      display: grid;
+      border-right: 1px solid lightgray;
+      align-content: center;
+      font-size: x-small;
+
+      .text {
+        text-align: center;
+      }
+
+      .vertical-line {
+        border-right: 1px solid lightgray;
+        height: 100vh;
+        position: absolute;
+        margin-left: -1px;
+
+        &.present {
+          border-color: aqua;
+          border-width: 2px;
+          z-index: 10;
+        }
+      }
+    }
+  }
+
+  .user-projects {
+    display: grid;
+    grid-auto-flow: column;
+
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border-left: 1px solid lightgray;
+
+    .username {
+      display: grid;
+      align-items: center;
+
+      .text {
+        text-align: right;
+        margin-right: 2px;
+      }
+    }
+
+    .project-past {
+      background: gray;
+      width: 100%;
+      border-radius: 6px;
+      height: 16px;
+      align-self: center;
+      z-index: 1;
+
+      .name {
+        color: white;
+        font-size: 0.75em;
+        text-align: left;
+        margin-left: 2px;
+        margin-right: 2px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    }
+
+    .project-present {
+      background: orangered;
+      width: 100%;
+      border-radius: 6px;
+      height: 16px;
+      align-self: center;
+      z-index: 1;
+
+      .name {
+        color: white;
+        font-size: 0.75em;
+        text-align: left;
+        margin-left: 2px;
+        margin-right: 2px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    }
+
+    .project-planned {
+        background: red;
+        width: 100%;
+        border-radius: 6px;
+        height: 16px;
+        align-self: center;
+        z-index: 1;
+  
+        .name {
+          color: white;
+          font-size: 0.75em;
+          text-align: left;
+          margin-left: 2px;
+          margin-right: 2px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+        }
+      }
+  }
+}
